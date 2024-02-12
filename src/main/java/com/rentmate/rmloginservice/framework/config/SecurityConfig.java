@@ -2,13 +2,14 @@ package com.rentmate.rmloginservice.framework.config;
 
 import com.rentmate.rmloginservice.framework.filter.AuthoritiesLoggingFilter;
 import com.rentmate.rmloginservice.framework.filter.CsrfCookieFilter;
-import com.rentmate.rmloginservice.framework.filter.JWTGeneratorFilter;
 import com.rentmate.rmloginservice.framework.filter.JWTValidatorFilter;
 import com.rentmate.rmloginservice.framework.filter.RequestValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -43,22 +44,24 @@ public class SecurityConfig {
         CsrfTokenRequestAttributeHandler requestHandler = new CsrfTokenRequestAttributeHandler();
         requestHandler.setCsrfRequestAttributeName("_csrf");
 
-        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+        http.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors().configurationSource(corsConfigurationSource())
-                .and()
-                .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/register/insert","/login")
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
-                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                .and().csrf().disable()
+//                .csrf((csrf) -> csrf.csrfTokenRequestHandler(requestHandler).ignoringRequestMatchers("/register/insert","/login")
+//                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                .formLogin().disable() // 禁用Spring Security的表單登入
+                .httpBasic().disable() // 禁用
+//                .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthoritiesLoggingFilter(), BasicAuthenticationFilter.class)
-                .addFilterAfter(new JWTGeneratorFilter(),BasicAuthenticationFilter.class)
+//                .addFilterAfter(new JWTGeneratorFilter(),BasicAuthenticationFilter.class)
                 .addFilterBefore(new JWTValidatorFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/RM001002","/RM001003").hasAnyRole("ADMIN","USER")
                         .requestMatchers("/user").authenticated()
-                        .requestMatchers("/register/insert").permitAll());
-        http.formLogin(Customizer.withDefaults());
-        http.httpBasic(Customizer.withDefaults());
+                        .requestMatchers("/register/insert","/login").permitAll());
+//        http.formLogin(Customizer.withDefaults());
+//        http.httpBasic(Customizer.withDefaults());
         return http.build();
     }
 
@@ -80,6 +83,11 @@ public class SecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 
 }

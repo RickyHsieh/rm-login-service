@@ -63,7 +63,8 @@ public class JWTValidatorFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (JwtException e) {
-                throw new IllegalStateException(String.format("Token %s cannot be trusted", token));
+                response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Token cannot be trusted");
+                return;
             }
         }
         filterChain.doFilter(request, response);

@@ -1,6 +1,5 @@
 package com.rentmate.rmloginservice.framework.config;
 
-import com.rentmate.rmloginservice.dao.dto.CustomerDto;
 import com.rentmate.rmloginservice.dao.model.Customer;
 import com.rentmate.rmloginservice.dao.repository.CustomerRepository;
 import com.rentmate.rmloginservice.framework.dao.model.Authority;

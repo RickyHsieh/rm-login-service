@@ -1,9 +1,7 @@
 package com.rentmate.rmloginservice.controller;
 
-import com.rentmate.rmloginservice.dao.dto.CustomerDto;
-import com.rentmate.rmloginservice.dao.model.Customer;
+import com.rentmate.rmloginservice.dao.dto.RegisterRequest;
 import com.rentmate.rmloginservice.service.RegisterService;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -26,7 +24,7 @@ public class RegisterController {
     private RegisterService service;
 
     @PostMapping("/insert")
-    public ResponseEntity<String> doPost(@RequestBody CustomerDto request) {
+    public ResponseEntity<String> doPost(@RequestBody RegisterRequest request) {
 
         return service.registerHelper(request);
     }

@@ -1,6 +1,6 @@
 package com.rentmate.rmloginservice.service;
 
-import com.rentmate.rmloginservice.dao.dto.CustomerDto;
+import com.rentmate.rmloginservice.dao.dto.RegisterRequest;
 import com.rentmate.rmloginservice.dao.model.Customer;
 import com.rentmate.rmloginservice.dao.repository.CustomerRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -30,7 +30,7 @@ public class RegisterService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public ResponseEntity<String> registerHelper(CustomerDto request) {
+    public ResponseEntity<String> registerHelper(RegisterRequest request) {
 
         String firstName = request.getFirstName();
         String lastName = request.getLastName();
@@ -49,7 +49,7 @@ public class RegisterService {
         try {
 
 
-            CustomerDto dto = new CustomerDto();
+            RegisterRequest dto = new RegisterRequest();
             dto.setLastName(lastName);
             dto.setFirstName(firstName);
             dto.setUsername(username);
@@ -80,7 +80,7 @@ public class RegisterService {
         }
     }
 
-    private Customer toEntity(CustomerDto dto) {
+    private Customer toEntity(RegisterRequest dto) {
         Customer customer = new Customer();
         customer.setLastName(dto.getLastName());
         customer.setFirstName(dto.getFirstName());
